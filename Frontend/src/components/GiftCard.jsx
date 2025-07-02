@@ -878,11 +878,12 @@ const filteredGiftCards = useMemo(() => {
           <div className="d-flex align-items-center gap-3">
   <button
     className="btn"
+     style={{ border: "none", background: "transparent" }}
     onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
     disabled={currentPage === 1}
     aria-label="Previous Page"
   >
-    <GoChevronLeft size={20} />
+    <GoChevronLeft size={20}  />
   </button>
 
   <div className="text-center downt">
@@ -891,6 +892,7 @@ const filteredGiftCards = useMemo(() => {
 
   <button
     className="btn"
+    style={{ border: "none", background: "transparent" }}
     onClick={() =>
       setCurrentPage((prev) =>
         Math.min(prev + 1, Math.ceil(filteredGiftCards.length / rowsPerPage))
@@ -899,7 +901,7 @@ const filteredGiftCards = useMemo(() => {
     disabled={currentPage === Math.ceil(filteredGiftCards.length / rowsPerPage)}
     aria-label="Next Page"
   >
-    <GoChevronRight size={20} />
+    <GoChevronRight size={20}  />
   </button>
 </div>
 
