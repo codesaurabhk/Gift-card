@@ -50,7 +50,7 @@ const [rowsPerPage, setRowsPerPage] = useState(10);
         console.log(data);
         const updatedData = data.map((item) => ({
           ...item,
-          id: item._id, // Mapping _id to id
+          id: item._id, 
         }));
         setGiftCardDatas(updatedData);
       } catch (err) {
@@ -77,7 +77,7 @@ const [rowsPerPage, setRowsPerPage] = useState(10);
     fetchCustomers();
   }, []);
 
-  // Function to handle PDF export
+  
   const handleExportPDF = () => {
     const table = tableRef.current;
     if (!table) {
@@ -85,30 +85,26 @@ const [rowsPerPage, setRowsPerPage] = useState(10);
       return;
     }
 
-    // Use html2canvas to capture the table as an image
+    
     html2canvas(table, { scale: 2 })
       .then((canvas) => {
         const imgData = canvas.toDataURL("image/png");
         const pdf = new jsPDF("p", "mm", "a4");
-        const imgWidth = 190; // Width of the PDF page content (in mm)
-        const pageHeight = 295; // Height of A4 page (in mm)
+        const imgWidth = 190; 
+        const pageHeight = 295; 
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
         let heightLeft = imgHeight;
         let position = 10;
 
-        // Add the image to the PDF
         pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
         heightLeft -= pageHeight;
 
-        // Handle multi-page PDF if the table is too long
         while (heightLeft >= 0) {
           position = heightLeft - imgHeight;
           pdf.addPage();
           pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
           heightLeft -= pageHeight;
         }
-
-        // Save the PDF with a filename
         pdf.save("gift_cards.pdf");
       })
       .catch((error) => {
@@ -170,7 +166,6 @@ const [rowsPerPage, setRowsPerPage] = useState(10);
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Basic form validation to ensure all fields are filled
     if (
       !formData.giftCard ||
       !formData.customer ||
@@ -186,65 +181,33 @@ const [rowsPerPage, setRowsPerPage] = useState(10);
 
     try {
       const response = await fetch("http://localhost:5000/api/giftcard/", {
-        method: "POST", // Send a POST request
+        method: "POST", 
         headers: {
-          "Content-Type": "application/json", // Indicate that we're sending JSON
+          "Content-Type": "application/json", 
         },
-        body: JSON.stringify(formData), // Send the form data as a JSON string
+        body: JSON.stringify(formData), 
       });
 
-      // Check if the response is not OK (status 2xx)
       if (!response.ok) {
         const errorData = await response.json();
         console.error("API error:", errorData);
-        throw new Error(errorData.message || "Failed to add gift card"); // Display error from the server if available
+        throw new Error(errorData.message || "Failed to add gift card"); 
       }
 
-      const data = await response.json(); // Parse the response data
-      console.log("New Gift Card Added:", data); // Log the response (the added gift card)
+      const data = await response.json(); 
+      console.log("New Gift Card Added:", data); 
 
-      // Optionally, you can update your state here to show the new gift card in the UI
-      setGiftCardDatas((prevData) => [...prevData, data]); // Add the new gift card to the list
+      setGiftCardDatas((prevData) => [...prevData, data]); 
 
-      // Close the modal after submission
       handleClose();
     } catch (err) {
-      setError(err.message); // Set error state if something goes wrong
+      setError(err.message); 
       console.error("Error:", err.message);
     }
   };
-
-  // const handleCustomerSub = async (e) => {
-  //   e.preventDefault();
-
-  //   try {
-  //     const response = await fetch("http://localhost:5000/api/customers/",
-  //     {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json", // Indicate that we're sending JSON
-  //       },
-  //       body: JSON.stringify({ addcustomers: name }),
-  //     });
-
-  //     if (!response.ok) {
-  //       const errorData = await response.json();
-  //       console.error("API error:", errorData);
-  //       throw new Error(errorData.message || "Failed to add Customers"); 
-  //     }
-  //     const data = await response.json(); 
-  //       console.log("Customers data added:", data);
-  //       setCformData((prevData)=> [...prevData , data]);
-  //          handleClose();
-  //   } catch (err) {
-  //      setError(err.message); // Set error state if something goes wrong
-  //     console.error("Error:", err.message);
-  //   }
-  // };
-
   const handleEditOpen = (card) => {
     console.log("Selected Gift Card:", card);
-    setEditFormData(card); // preload data
+    setEditFormData(card); 
     setShowEditModal(true);
   };
   const handleEditClose = () => {
@@ -262,18 +225,17 @@ const [rowsPerPage, setRowsPerPage] = useState(10);
   };
 
   const toEditForm = (row) => ({
-    id: row.id, // Include the `id` of the gift card for the update
+    id: row.id, 
     giftCard: row.giftCard,
     customer: row.customer,
-    issuedDate: dayjs(row.issuedDate).format("YYYY-MM-DD"), // Format the date
-    expiryDate: dayjs(row.expiryDate).format("YYYY-MM-DD"), // Format the date
-    amount: row.amount.toString(), // Ensure amount is a string
-    balance: row.balance.toString(), // Ensure balance is a string
-    status: row.status === "Active", // Set status to true if it's active
+    issuedDate: dayjs(row.issuedDate).format("YYYY-MM-DD"), 
+    expiryDate: dayjs(row.expiryDate).format("YYYY-MM-DD"), 
+    amount: row.amount.toString(), 
+    balance: row.balance.toString(), 
+    status: row.status === "Active", 
   });
 
   const toISO = (prettyDate) => {
-    // 24 Dec 2024 ➜ 2024‑12‑24
     const [d, mon, y] = prettyDate.split(" ");
     const m = ("JanFebMarAprMayJunJulAugSepOctNovDec".indexOf(mon) / 3 + 1)
       .toString()
@@ -288,8 +250,8 @@ const [rowsPerPage, setRowsPerPage] = useState(10);
       ...editFormData,
       issuedDate: dayjs(editFormData.issuedDate).format("YYYY-MM-DD"),
       expiryDate: dayjs(editFormData.expiryDate).format("YYYY-MM-DD"),
-      amount: Number(editFormData.amount), // Ensure amount is a number
-      balance: Number(editFormData.balance), // Ensure balance is a number
+      amount: Number(editFormData.amount), 
+      balance: Number(editFormData.balance),
     };
 
     try {
@@ -333,14 +295,12 @@ const [rowsPerPage, setRowsPerPage] = useState(10);
 
     try {
       const response = await fetch(`http://localhost:5000/api/giftcard/${id}`, {
-        method: "DELETE", // HTTP method for deleting data
+        method: "DELETE", 
       });
 
       if (!response.ok) {
         throw new Error("Failed to delete the gift card");
       }
-
-      // Remove the deleted gift card from the state
       setGiftCardDatas((prevData) =>
         prevData.filter((card) => card._id !== id)
       );
@@ -409,8 +369,6 @@ const filteredGiftCards = useMemo(() => {
   useEffect(() => {
   fetchGiftDataref();
 }, []);
-
-
   const handleShow = () => setShowModal(true);
   return (
     <div className="fn-conatiner">
@@ -457,8 +415,6 @@ const filteredGiftCards = useMemo(() => {
           </Button>
         </div>
       </div>
-      {/* models */}
-
       <Modal show={showModal} onHide={handleCloses} centered>
         <Modal.Header closeButton>
           <Modal.Title>Add Gift Card</Modal.Title>
@@ -742,7 +698,7 @@ const filteredGiftCards = useMemo(() => {
           </Button>
         </Modal.Footer>
       </Modal>
-      {/* ───────────────── Add‑Customer Modal ──────────────── */}
+     
       <Modal
         show={showCustomerModal}
         onHide={() => setShowCustomerModal(false)}
@@ -763,7 +719,6 @@ const filteredGiftCards = useMemo(() => {
               if (!name) return;
 
               try {
-                // 👉 hit your API (or whatever you use) to save
                 const res = await fetch("http://localhost:5000/api/customers/", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
@@ -771,10 +726,7 @@ const filteredGiftCards = useMemo(() => {
                 });
                 const saved = await res.json();
 
-                // 👉 pop the new customer into the dropdown list
                 setFormData((prev) => ({ ...prev, customer: saved._id }));
-                // if you keep a separate customers list:
-                // setCustomers((prev) => [...prev, saved]);
 
                 setShowCustomerModal(false);
               } catch (err) {
@@ -901,23 +853,9 @@ const filteredGiftCards = useMemo(() => {
         </div>
 
         <div className="d-flex justify-content-between align-items-center p-3">
-          {/* Row Per Page Section */}
+          
           <div className="d-flex gap-3 align-items-center">
             <div>Rows Per Page</div>
-
-            {/* <select
-              className="form-select"
-              name="rows"
-              id="rows"
-              style={{ width: "80px" }}
-            >
-              
-              <option value="10">10</option>
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-            </select> */}
-
             <select
   className="form-select"
   name="rows"
@@ -926,7 +864,7 @@ const filteredGiftCards = useMemo(() => {
   value={rowsPerPage}
   onChange={(e) => {
     setRowsPerPage(Number(e.target.value));
-    setCurrentPage(1); // Reset to page 1 on change
+    setCurrentPage(1);
   }}
 >
   <option value="5">5</option>
@@ -936,20 +874,7 @@ const filteredGiftCards = useMemo(() => {
 
             <div>Entries</div>
           </div>
-                {/* 
-          <div className="d-flex align-items-center gap-3">
-            <button className="btn " aria-label="Previous Page">
-              <GoChevronLeft size={20} />
-            </button>
-
-            <div className="text-center downt">
-              <span>1</span>
-            </div>
-
-            <button className="btn " aria-label="Next Page">
-              <GoChevronRight size={20} />
-            </button>
-          </div>*/}
+               
           <div className="d-flex align-items-center gap-3">
   <button
     className="btn"
