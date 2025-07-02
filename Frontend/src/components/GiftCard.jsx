@@ -32,6 +32,9 @@ const GiftCard = ({ show, handleClose }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [sortOption, setSortOption] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+const [rowsPerPage, setRowsPerPage] = useState(10);
+
 
 
 
@@ -852,7 +855,9 @@ const filteredGiftCards = useMemo(() => {
             
             <tbody>
               
-              {filteredGiftCards.map((item, idx) => (
+              {filteredGiftCards
+              .slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
+              .map((item, idx) => (
                 <tr key={idx}>
                   <th scope="col">
                     <input type="checkbox" />
@@ -899,20 +904,39 @@ const filteredGiftCards = useMemo(() => {
           {/* Row Per Page Section */}
           <div className="d-flex gap-3 align-items-center">
             <div>Rows Per Page</div>
-            <select
+
+            {/* <select
               className="form-select"
               name="rows"
               id="rows"
               style={{ width: "80px" }}
             >
+              
               <option value="10">10</option>
               <option value="1">1</option>
               <option value="2">2</option>
               <option value="3">3</option>
-            </select>
+            </select> */}
+
+            <select
+  className="form-select"
+  name="rows"
+  id="rows"
+  style={{ width: "80px" }}
+  value={rowsPerPage}
+  onChange={(e) => {
+    setRowsPerPage(Number(e.target.value));
+    setCurrentPage(1); // Reset to page 1 on change
+  }}
+>
+  <option value="5">5</option>
+  <option value="10">10</option>
+  <option value="20">20</option>
+</select>
+
             <div>Entries</div>
           </div>
-
+                {/* 
           <div className="d-flex align-items-center gap-3">
             <button className="btn " aria-label="Previous Page">
               <GoChevronLeft size={20} />
@@ -925,7 +949,36 @@ const filteredGiftCards = useMemo(() => {
             <button className="btn " aria-label="Next Page">
               <GoChevronRight size={20} />
             </button>
-          </div>
+          </div>*/}
+          <div className="d-flex align-items-center gap-3">
+  <button
+    className="btn"
+    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+    disabled={currentPage === 1}
+    aria-label="Previous Page"
+  >
+    <GoChevronLeft size={20} />
+  </button>
+
+  <div className="text-center downt">
+    <span>{currentPage}</span>
+  </div>
+
+  <button
+    className="btn"
+    onClick={() =>
+      setCurrentPage((prev) =>
+        Math.min(prev + 1, Math.ceil(filteredGiftCards.length / rowsPerPage))
+      )
+    }
+    disabled={currentPage === Math.ceil(filteredGiftCards.length / rowsPerPage)}
+    aria-label="Next Page"
+  >
+    <GoChevronRight size={20} />
+  </button>
+</div>
+
+
         </div>
       </div>
 
